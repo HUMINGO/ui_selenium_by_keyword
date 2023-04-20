@@ -1,0 +1,24 @@
+2023-04-19 16:44:38 INFO [conftest:46] :执行关键字：open，参数：['http://121.37.190.62:9200/login']
+2023-04-19 16:44:39 INFO [conftest:46] :执行关键字：input_text，参数：['//*[@id="custom-validation_username"]', 'admin']
+2023-04-19 16:44:39 INFO [conftest:46] :执行关键字：input_text，参数：['//*[@id="custom-validation_password"]', 'onesports']
+2023-04-19 16:44:40 INFO [conftest:46] :执行关键字：click，参数：['//*[@id="app"]/div/div/div[2]/form/div[3]/div/div/div/button']
+2023-04-19 16:44:40 INFO [conftest:46] :执行关键字：assert_equal，参数：['/html/body/div[2]/div/div/div/div/div/span[2]', '登录成功']
+2023-04-19 16:44:41 INFO [pytest_result_log:139] :test status is PASSED (data/test_data.xlsx::Sheet1::正常登录): None
+2023-04-19 16:44:45 INFO [conftest:46] :执行关键字：open，参数：['http://121.37.190.62:9200/login']
+2023-04-19 16:44:45 INFO [conftest:46] :执行关键字：input_text，参数：['//*[@id="custom-validation_username"]', 'admin']
+2023-04-19 16:44:46 INFO [conftest:46] :执行关键字：input_text，参数：['//*[@id="custom-validation_password"]', 'onesports1']
+2023-04-19 16:44:47 INFO [conftest:46] :执行关键字：click，参数：['//*[@id="app"]/div/div/div[2]/form/div[3]/div/div/div/button']
+2023-04-19 16:44:47 INFO [conftest:46] :执行关键字：assert_equal，参数：['/html/body/div[2]/div/div/div/div/div/span[2]', '登录成功']
+2023-04-19 16:44:57 ERROR [pytest_result_log:139] :test status is FAILED (data/test_data.xlsx::Sheet1::异常登录): unknown
+2023-04-19 16:45:06 INFO [conftest:46] :执行关键字：click，参数：['/html/body/div[1]/section/aside/div/ul/li[3]/div/span[2]']
+2023-04-19 16:45:07 INFO [conftest:46] :执行关键字：click，参数：['/html/body/div[1]/section/aside/div/ul/li[3]/ul/li/span/a']
+2023-04-19 16:45:08 INFO [conftest:46] :执行关键字：sleep，参数：[3]
+2023-04-19 16:45:11 INFO [conftest:46] :执行关键字：swipe，参数：['/html/body/div[1]/section/section/main/div/div[2]/div/div/div/div/div/div[2]/table/tbody/tr[14]/td[2]']
+2023-04-19 16:45:11 INFO [conftest:46] :执行关键字：sleep，参数：[10]
+2023-04-19 16:45:22 INFO [pytest_result_log:139] :test status is PASSED (data/test_data2.xlsx::Sheet1::查看用户列表): None
+2023-04-19 16:45:29 INFO [conftest:46] :执行关键字：click，参数：['/html/body/div[1]/section/aside/div/ul/li[6]/div/span[2]']
+2023-04-19 16:45:30 INFO [conftest:46] :执行关键字：click，参数：['/html/body/div[1]/section/aside/div/ul/li[6]/ul/li[5]/span/a']
+2023-04-19 16:45:30 INFO [conftest:46] :执行关键字：click，参数：['/html/body/div[1]/section/section/main/div/div[1]/div/div[2]/button/a']
+2023-04-19 16:45:32 INFO [conftest:46] :执行关键字：sleep，参数：[3]
+2023-04-19 16:45:35 INFO [conftest:46] :执行关键字：click，参数：['//*[@id="form_item_actionId"]']
+2023-04-19 16:45:46 ERROR [pytest_result_log:139] :test status is FAILED (data/test_data2.xlsx::Sheet2::新增排行榜): unknown
