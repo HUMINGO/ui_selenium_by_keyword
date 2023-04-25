@@ -24,5 +24,5 @@ class ExcelFile(dict):
 
 
 if __name__ == '__main__':
-    excel = ExcelFile(r"E:\pytest\ui_selenium_by_keyword\data\data.xlsx")
+    excel = ExcelFile(r"E:\pytest\ui_selenium_by_keyword\data\test_data.xlsx")
     print(excel)
