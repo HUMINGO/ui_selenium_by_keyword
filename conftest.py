@@ -70,7 +70,7 @@ def user_login_driver():
 @pytest.fixture(scope='function', autouse=False)
 def auto_login_with_cookies():
     """
-    自动登录管理后台
+    自动登录管理后台，通过cookie来管理登录
     :return:
     """
     # 1、判断是否登录
