@@ -22,7 +22,3 @@ class ExcelFile(dict):
         if data:
             self.update(data)
 
-
-if __name__ == '__main__':
-    excel = ExcelFile(r"E:\pytest\ui_selenium_by_keyword\test_cases\test_data.xlsx")
-    print(excel)
