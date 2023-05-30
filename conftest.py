@@ -93,6 +93,7 @@ def auto_login_with_cookies():
             loginPage.login("admin", "onesports")
 
 
+@pytest.fixture(scope='session', autouse=True)
 def get_token():
     """
     获取到localstorage
@@ -118,7 +119,7 @@ def set_token():
     driver.get("http://121.37.190.62:9200")
 
     with open('local_storage.json') as f:
-        storage = json.loads(f.read())
+        storage = json.load(f)
         print(storage)
 
     for i in dict(storage).keys():
@@ -163,5 +164,40 @@ def auto_login_admin():
     driver.quit()
 
 
+@pytest.fixture
+def auto_login_driver():
+    """
+    :return:
+    """
+    driver = get_driver()
+    driver.get("http://121.37.190.62:9200")
+    time.sleep(3)
+    # is login?
+    if driver.title == "登录":
+        with open('local_storage.json') as f:
+            data = f.read()
+        try:
+            storage = json.loads(data)
+            if storage:
+                for i in dict(storage).keys():
+                    if dict(storage)[i] is None:
+                        continue
+                    else:
+                        value = dict(storage)[i]
+                        driver.execute_script(f"window.localStorage.setItem('{i}', '{value}')")
+                driver.refresh()
+                if driver.title == "登录":
+                    get_token()
+            else:
+                get_token()
+        except ValueError as e:
+            logger.info("文件内容无法解析为JSON对象:", e)
+            get_token()
+    else:
+        pass
+    yield driver
+    driver.quit()
+
+
 if __name__ == '__main__':
-    auto_login_admin()
+    get_token()

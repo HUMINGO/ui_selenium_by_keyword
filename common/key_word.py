@@ -64,11 +64,8 @@ class KeyWord:
         :param loc:
         :return:
         """
-        wait = WebDriverWait(self.driver, 10)
-        element = wait.until(EC.visibility_of_element_located((selenium_by, loc)))
-        element.click()
-        # if self.element_is_visible(loc):
-        #     self.find_element(selenium_by, loc).click()
+        el = self.find_element(selenium_by, loc)
+        el.click()
 
     def wait(self, func, *args):
         # 允许任意数量的参数
