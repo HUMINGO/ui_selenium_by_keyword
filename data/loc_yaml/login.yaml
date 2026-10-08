@@ -1,6 +1,7 @@
 # 登录页面
 
-user_name_input: //*[@id="custom-validation_username"]
-password_input: //*[@id="custom-validation_password"]
-login_btn: //*[@id="app"]/div/div/div[2]/form/div[3]/div/div/div/button
-login_success_text: /html/body/div[2]/div/div/div/div/div/span[2]
+user_name_input: //*[@id="userName"]
+password_input: //*[@id="password"]
+login_btn: //*[@id="root"]/div[1]/div[2]/div[2]/div/form/div[5]/div/div/div/div/button/span
+login_error: /html/body/div[4]/div/div/div/div/div/div[1]
+login_success: //*[@id="root"]/div[1]/section/aside/div/div[1]/ul/li[1]/span/a/span/span[2]

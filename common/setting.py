@@ -2,8 +2,6 @@
 
 from selenium.webdriver.common.by import By
 
-# 测试用例路径
-case_path = "testcase_yaml"
 
 # 配置文件路径
 config_path = "config/config.yaml"
@@ -25,3 +23,5 @@ selenium_by = By.XPATH
 
 # 定位元素的yaml文件
 loc_yaml = "data/loc_yaml/login.yaml"
+
+base_url = "https://gameetcms.chuntiangl.com/"

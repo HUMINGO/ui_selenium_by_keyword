@@ -21,6 +21,4 @@ def atest_login():
     kw.sleep(3)
 
 
-@pytest.mark.parametrize("n", [1, 2, 4])
-def btest_demo(n):
-    print(n)
+

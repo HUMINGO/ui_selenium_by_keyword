@@ -7,6 +7,7 @@ from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from common.setting import base_url
 
 logger = logging.getLogger(__name__)
 
@@ -57,10 +58,10 @@ class BasePage:
 
 
 class LoginPage(BasePage):
-    ipt_username = (By.XPATH, '//*[@id="custom-validation_username"]')
-    ipt_password = (By.XPATH, '//*[@id="custom-validation_password"]')
-    login_button = (By.XPATH, '//*[@id="app"]/div/div/div[2]/form/div[3]/div/div/div/button/span')
-    login_success = (By.XPATH, '/html/body/div[2]/div/div/div/div/div/span[2]')
+    ipt_username = (By.XPATH, '//*[@id="userName"]')
+    ipt_password = (By.XPATH, '//*[@id="password"]')
+    login_button = (By.XPATH, '//*[@id="root"]/div[1]/div[2]/div[2]/div/form/div[5]/div/div/div/div/button/span')
+    login_success = (By.XPATH, '//*[@id="root"]/div[1]/section/aside/div/div[1]/ul/li[1]/span/a/span/span[2]')
 
     def login(self, username, password):
         """
@@ -69,7 +70,7 @@ class LoginPage(BasePage):
         :param password: 密码
         :return:
         """
-        self.driver.get("http://121.37.190.62:9200/login")
+        self.driver.get(base_url)
         time.sleep(3)
         self.driver.find_element(*self.ipt_username).send_keys(username)
         self.driver.find_element(*self.ipt_password).send_keys(password)
@@ -81,8 +82,7 @@ class LoginPage(BasePage):
 
             cookies = self.driver.get_cookies()
             with open("data/admin_cookie.json", "w") as f:
-                for cookie in cookies:
-                    f.write(json.dumps(cookie))
+                json.dump(cookies, f)
 
     def wait(self):
         wait = WebDriverWait(self.driver, 10)  # 手动设置等待对象

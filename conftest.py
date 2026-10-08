@@ -8,6 +8,8 @@ from selenium.webdriver import Chrome
 from common.pom import LoginPage
 from common.driver import get_driver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from pytest_xlsx.file import XlsxItem
 import logging
 from common.key_word import KeyWord
@@ -67,30 +69,6 @@ def user_login_driver():
     return driver
 
 
-@pytest.fixture(scope='function', autouse=False)
-def auto_login_with_cookies():
-    """
-    自动登录管理后台，通过cookie来管理登录
-    :return:
-    """
-    # 1、判断是否登录
-    driver = get_driver()
-    driver.get("http://121.37.190.62:9200")
-    driver.refresh()
-    time.sleep(2)
-    if driver.title == "登录":  # 未登录，加载cookies看是否能够成功登录
-        with open('data/admin_cookie.json', mode='r') as f:
-            _data = f.read()
-            if _data:
-                cookies = json.loads(f.read())
-            else:
-                cookies = []
-        for cookie in cookies:
-            driver.add_cookie(cookie)
-        driver.refresh()
-        if driver.title == "登录":
-            loginPage = LoginPage(driver)
-            loginPage.login("admin", "onesports")
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -102,102 +80,71 @@ def get_token():
     driver = get_driver()
     driver.implicitly_wait(10)
     loginPage = LoginPage(driver)
-    loginPage.login("admin", "onesports")
-    driver.find_element(By.XPATH, '//*[@id="app"]/section/aside/div/div/p')
+    loginPage.login("humin", "20250909")
+    # driver.find_element(By.XPATH, '//*[@id="app"]/section/aside/div/div/p')
     local_storage = driver.execute_script('return window.localStorage')
     print(local_storage)
-    with open('local_storage.json', 'w') as f:
+    with open('data/admin_cookie.json', 'w') as f:
         f.write(json.dumps(local_storage))
 
 
-def set_token():
-    """
-    设置local_storage
-    :return:
-    """
-    driver = get_driver()
-    driver.get("http://121.37.190.62:9200")
-
-    with open('local_storage.json') as f:
-        storage = json.load(f)
-        print(storage)
-
-    for i in dict(storage).keys():
-        if dict(storage)[i] is None:
-            continue
-        else:
-            value = dict(storage)[i]
-            driver.execute_script(f"window.localStorage.setItem('{i}', '{value}')")
-
-    driver.refresh()
-    input()
 
 
 @pytest.fixture
 def auto_login_admin():
     """
-    自动登录
+    优先通过已保存的 Cookie 登录，Cookie 无效时使用账号密码登录。
     :return:
     """
     driver = get_driver()
-    driver.get("http://121.37.190.62:9200")
-    time.sleep(3)
-    # 判断是否登录
-    if driver.title == "登录":  # 说明没有登录需要进行登录
-        with open('local_storage.json') as f:
-            storage = json.loads(f.read())
-        if storage is None:  # 没有值就不能自动登录
-            loginPage = LoginPage(driver)
-            loginPage.login("admin", "onesports")
-        else:
-            for i in dict(storage).keys():
-                if dict(storage)[i] is None:
-                    continue
-                else:
-                    value = dict(storage)[i]
-                    driver.execute_script(f"window.localStorage.setItem('{i}', '{value}')")
+    try:
+        driver.get(base_url)
 
-        driver.refresh()
-    else:  # 说明已经登录了
-        pass
-    yield driver
-    driver.quit()
-
-
-@pytest.fixture
-def auto_login_driver():
-    """
-    :return:
-    """
-    driver = get_driver()
-    driver.get("http://121.37.190.62:9200")
-    time.sleep(3)
-    # is login?
-    if driver.title == "登录":
-        with open('local_storage.json') as f:
-            data = f.read()
         try:
-            storage = json.loads(data)
-            if storage:
-                for i in dict(storage).keys():
-                    if dict(storage)[i] is None:
-                        continue
-                    else:
-                        value = dict(storage)[i]
-                        driver.execute_script(f"window.localStorage.setItem('{i}', '{value}')")
-                driver.refresh()
-                if driver.title == "登录":
-                    get_token()
-            else:
-                get_token()
-        except ValueError as e:
-            logger.info("文件内容无法解析为JSON对象:", e)
-            get_token()
-    else:
-        pass
-    yield driver
-    driver.quit()
+            with open('data/admin_cookie.json', encoding='utf-8') as f:
+                cookies = json.load(f)
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.warning("读取登录 Cookie 失败，将使用账号密码登录: %s", exc)
+            cookies = []
+
+        # 兼容早期文件中只保存单个 Cookie 对象的格式。
+        if isinstance(cookies, dict):
+            cookies = [cookies]
+
+        for cookie in cookies:
+            cookie = dict(cookie)
+            # Selenium 不接受从浏览器导出的 sameSite=None 字符串。
+            if cookie.get('sameSite') not in ('Strict', 'Lax', 'None'):
+                cookie.pop('sameSite', None)
+            try:
+                driver.add_cookie(cookie)
+            except Exception as exc:
+                logger.warning("跳过无法注入的 Cookie %r: %s", cookie.get('name'), exc)
+
+        if cookies:
+            driver.refresh()
+            time.sleep(2)
+
+        # 用应用内登录后的首页元素判断状态，给前端路由跳转留出时间。
+        login_success = (By.XPATH, '//*[@id="root"]/div[1]/section/aside/div/div[1]/ul/li[1]/span/a/span/span[2]')
+        logged_in = False
+        try:
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located(login_success))
+            logged_in = True
+        except Exception:
+            logger.info("Cookie 未建立登录状态，改用账号密码登录")
+
+        if not logged_in:
+            LoginPage(driver).login("humin", "20250909")
+            try:
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located(login_success))
+            except Exception as exc:
+                raise RuntimeError(
+                    "Cookie 登录和账号密码登录均未成功；请确认 Cookie 未过期，且登录账号可用。"
+                ) from exc
+
+        yield driver
+    finally:
+        driver.quit()
 
 
-if __name__ == '__main__':
-    get_token()

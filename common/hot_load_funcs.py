@@ -37,7 +37,7 @@ def get_username():
     获取用户名
     :return:
     """
-    return "admin"
+    return "humin"
 
 
 def get_password():
@@ -45,4 +45,4 @@ def get_password():
     获取密码
     :return:
     """
-    return "onesports"
+    return "20250909"
