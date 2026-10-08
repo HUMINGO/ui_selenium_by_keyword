@@ -81,8 +81,12 @@ class LoginPage(BasePage):
             print("登录成功")
 
             cookies = self.driver.get_cookies()
+            cookies = [
+                cookie for cookie in cookies
+                if isinstance(cookie, dict) and cookie.get("name") and cookie.get("value") is not None
+            ]
             with open("data/admin_cookie.json", "w") as f:
-                json.dump(cookies, f)
+                json.dump(cookies, f, ensure_ascii=False, indent=2)
 
     def wait(self):
         wait = WebDriverWait(self.driver, 10)  # 手动设置等待对象

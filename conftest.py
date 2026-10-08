@@ -107,21 +107,34 @@ def auto_login_admin():
             logger.warning("读取登录 Cookie 失败，将使用账号密码登录: %s", exc)
             cookies = []
 
-        # 兼容早期文件中只保存单个 Cookie 对象的格式。
+        # 兼容单个 Cookie 对象及 Selenium 返回的 Cookie 列表。
         if isinstance(cookies, dict):
             cookies = [cookies]
+        elif not isinstance(cookies, list):
+            logger.warning("Cookie 文件顶层格式无效: %s", type(cookies).__name__)
+            cookies = []
 
+        valid_cookies = []
         for cookie in cookies:
+            if not isinstance(cookie, dict) or not cookie.get('name') or cookie.get('value') is None:
+                logger.warning("忽略字段不完整的 Cookie: %r", cookie)
+                continue
             cookie = dict(cookie)
             # Selenium 不接受从浏览器导出的 sameSite=None 字符串。
             if cookie.get('sameSite') not in ('Strict', 'Lax', 'None'):
                 cookie.pop('sameSite', None)
+            valid_cookies.append(cookie)
+
+        if not valid_cookies:
+            logger.warning("没有可注入的有效 Cookie，将使用账号密码登录")
+
+        for cookie in valid_cookies:
             try:
                 driver.add_cookie(cookie)
             except Exception as exc:
-                logger.warning("跳过无法注入的 Cookie %r: %s", cookie.get('name'), exc)
+                logger.warning("跳过无法注入的 Cookie %r: %s", cookie['name'], exc)
 
-        if cookies:
+        if valid_cookies:
             driver.refresh()
             time.sleep(2)
 
